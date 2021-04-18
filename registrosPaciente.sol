@@ -8,19 +8,17 @@ pragma experimental ABIEncoderV2; //usado para tentar retornar a struct Paciente
 import "./Owned.sol";
 
 contract RegistroPaciente is Mortal {
- 
+
     // Eventos
     event pacienteCadastrado(string nome, uint CPF);
     event medicamentoCadastrado(uint id, string nomeMedicamento, string dataInicioTratamento, string dataFimTratamento);
     
     // Características de um paciente, dados obrigatórios para o cadastro
     struct Paciente {
-        //uint ID;
         string nome;
-        uint CPF; //todo: quero colocar o CPF como ID
+        uint CPF;
         string dataNascimento;
-        string sexo; // não tem char, por enquanto fica assim
-        
+        string sexo;
     }
     
     // Características do medicamento, dados obrigatórios para o cadastro
@@ -32,10 +30,11 @@ contract RegistroPaciente is Mortal {
         string dataFimTratamento;
     }
     
-    // Cada ID (paciente) possui um array de registros de medicamentos
+    // Cada CPF (paciente) possui um array de registros de medicamentos
     mapping (uint => Medicamento[]) registroMedicamentos;
+    
+    // CPF => index no array registros
     mapping (uint => uint) chaveCpfId;
-    // CPF => index
     
     // Array com todos os pacientes cadastrados
     Paciente[] public registros;
@@ -53,7 +52,7 @@ contract RegistroPaciente is Mortal {
     }
     
     //Cadastrar remedios receitados ao Paciente
-    function cadastrarRemedio(uint CPF, string memory _nomeMedicoReceitou, uint _codigoMedicamento, 
+    function cadastrarMedicamento(uint CPF, string memory _nomeMedicoReceitou, uint _codigoMedicamento, 
     string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         registroMedicamentos[CPF].push(Medicamento(_nomeMedicoReceitou, _codigoMedicamento, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento));
@@ -91,9 +90,6 @@ contract RegistroPaciente is Mortal {
     }
     
     
-    //todo Usar CPF como ID
-    
-    
     /*
     *FUNCOES DE EXCLUSAO
     */
@@ -101,13 +97,11 @@ contract RegistroPaciente is Mortal {
     function deletarPaciente(uint CPF) public returns (bool) {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = chaveCpfId[CPF]-1;
+        /* Remove do array registros o pacinte do indice (index), copia o o ultimo registro do array 
+        para o lugar delete e faz o pop(), removendo o ultimo elemento do array*/
         removeNoOrder(index);
         delete chaveCpfId[CPF]; 
         delete registroMedicamentos[CPF];
-        //saber se o paciente existe
-        //deletar do registros
-        //atualizar ID os outros pacientes?
-        // Ou trocar ID por CPF como identificador unico
         return true;
         
     }
@@ -115,7 +109,8 @@ contract RegistroPaciente is Mortal {
     function deletarMedicamentoPaciente(uint CPF, uint _codigoMedicamento) public returns (bool){
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = getMedicamento(CPF, _codigoMedicamento);
-        delete registroMedicamentos[CPF][index];
+        //delete registroMedicamentos[CPF][index];
+        removeMedicamentoInOrder(CPF, index);
         return true;
     }
     
@@ -125,18 +120,36 @@ contract RegistroPaciente is Mortal {
     *FUNCOES DE BUSCA
     */
     //Buscar Paciente
-    function verPaciente(uint CPF) public view returns (Paciente memory) {
+    function verPaciente(uint CPF) public view returns (string memory, uint, string memory, string memory) {//Paciente memory
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = chaveCpfId[CPF]-1;
-        return registros[index];
+        //return registros[index];
+        return (registros[index].nome, registros[index].CPF, registros[index].dataNascimento, registros[index].sexo);
     }
     //Buscar Medicamentos do Paciente
     function verMedicamentosPaciente(uint CPF) public view returns (Medicamento[] memory){
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
-        //uint index = chaveCpfId[CPF]-1;
+        require(registroMedicamentos[CPF].length != 0, "Paciente não possui medicamentos cadastrados");
         return registroMedicamentos[CPF];
     }
     
+    // Retorna a data de inicio e fim do tratamento de um medicamento, dado o CPF do paciente e o codigo do medicamento
+    function verDataInicioEFimMedicamento(uint CPF, uint _codigoMedicamento) public view returns (string memory, string memory) {
+        require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
+        require(registroMedicamentos[CPF].length != 0, "Paciente não possui medicamentos cadastrados");
+        uint index = getMedicamento(CPF, _codigoMedicamento);
+        return (registroMedicamentos[CPF][index].dataInicioTratamento, registroMedicamentos[CPF][index].dataFimTratamento);
+    }
+    // Retorna o ultimo medicamento cadastrado para um determinado paciente
+    function verUltimoMedicamento(uint CPF) public view returns (string memory, uint, string memory, string memory, string memory){ //todo Medicamento memory
+        require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
+        require(registroMedicamentos[CPF].length != 0, "Paciente não possui medicamentos cadastrados");
+        uint index = registroMedicamentos[CPF].length-1;
+        //return registroMedicamentos[CPF][index];
+
+        return (registroMedicamentos[CPF][index].nomeMedicoReceitou, registroMedicamentos[CPF][index].codigoMedicamento, 
+        registroMedicamentos[CPF][index].nomeMedicamento, registroMedicamentos[CPF][index].dataInicioTratamento, registroMedicamentos[CPF][index].dataFimTratamento);
+    }
     
     /*
     *FUNCOES AUXILIARES
@@ -145,6 +158,13 @@ contract RegistroPaciente is Mortal {
     function removeNoOrder(uint index) internal {
         registros[index] = registros[registros.length - 1];
         registros.pop();
+    }
+    
+    function removeMedicamentoInOrder(uint CPF, uint index) internal {
+        for (uint i=index; i< registroMedicamentos[CPF].length-1; i++) {
+            registroMedicamentos[CPF][i] = registroMedicamentos[CPF][i+1];
+        }
+        registroMedicamentos[CPF].pop();
     }
     
     // Retorna o index de medicamento, dado o CPF do paciente e o codigo do medicamento
@@ -156,7 +176,5 @@ contract RegistroPaciente is Mortal {
         }
     }
     
-    
-    //Gerar relatorio dos medicamentos utilziados nos ultimos 15 dias
     
 }
