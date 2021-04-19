@@ -9,9 +9,16 @@ import "./Owned.sol";
 
 contract RegistroPaciente is Mortal {
 
-    // Eventos
-    event pacienteCadastrado(string nome, uint CPF);
-    event medicamentoCadastrado(uint id, string nomeMedicamento, string dataInicioTratamento, string dataFimTratamento);
+    // Eventos Paciente
+    event pacienteCadastrado(string nome, uint CPF, string tipoAcao);
+    event pacienteDeletado(string nome, uint CPF, string tipoAcao); // FALTA POR
+    event pacienteAlterado(string nome, uint CPF, string tipoAcao); //  FALTA POR
+
+    // Eventos Medicamentos
+    event medicamentoCadastrado(uint id, string nomeMedicamento, string dataInicioTratamento, string dataFimTratamento, string tipoAcao);
+    event medicamentoDeletado(uint CPF, uint idMedicamento, string nomeMedicamento, string tipoAcao); //    FALTAR POR
+    event medicamentoAlterado(uint CPF, uint idMedicamento, string nomeMedicamento, string tipoAcao); //    FALTAR POR
+    
     
     // Características de um paciente, dados obrigatórios para o cadastro
     struct Paciente {
@@ -47,7 +54,7 @@ contract RegistroPaciente is Mortal {
         //uint id = registros.length + 1;
         registros.push(Paciente(_nome,_CPF,_dataNascimento, _sexo));
         chaveCpfId[_CPF] = registros.length;
-        emit pacienteCadastrado(_nome, _CPF);
+        emit pacienteCadastrado(_nome, _CPF, "Cadastro");
         return true;
     }
     
@@ -56,7 +63,7 @@ contract RegistroPaciente is Mortal {
     string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         registroMedicamentos[CPF].push(Medicamento(_nomeMedicoReceitou, _codigoMedicamento, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento));
-        emit medicamentoCadastrado(CPF, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento);
+        emit medicamentoCadastrado(CPF, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento, "Cadastro");
         
     }
     
