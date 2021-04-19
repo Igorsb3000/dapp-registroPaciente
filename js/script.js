@@ -198,8 +198,11 @@ function registraEventoPaciente(eventos) {
     td2.innerHTML = evento["returnValues"]["nome"];
     let td3 = document.createElement("td");  
     td3.innerHTML = "<a href='https://ropsten.etherscan.io/tx/"+ evento["transactionHash"] +"'>" + evento["transactionHash"] + "</a>";
+    let td4 = document.createElement("td");
+    td4.innerHTML = evento["returnValues"]["CPF"] + " (CPF)";
     tr.appendChild(td1);
     tr.appendChild(td2);
+    tr.appendChild(td4);
     tr.appendChild(td3);
     table.appendChild(tr);
   });
@@ -215,9 +218,12 @@ function registraEventoMedicamento(eventos) {
     td2.innerHTML = evento["returnValues"]["nomeMedicamento"];
     let td3 = document.createElement("td");  
     td3.innerHTML = "<a href='https://ropsten.etherscan.io/tx/"+ evento["transactionHash"] +"'>" + evento["transactionHash"] + "</a>";
+    let td4 = document.createElement("td");
+    td4.innerHTML = evento["returnValues"]["id"] + " (ID)";
     tr.appendChild(td1);
     tr.appendChild(td2);
-    tr.appendChild(td3);
+    tr.appendChild(td4);
+    tr.appendChild(td3); 
     table.appendChild(tr);
   });
 }
