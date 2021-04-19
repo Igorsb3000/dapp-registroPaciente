@@ -5,6 +5,37 @@ var abi = [
 			{
 				"indexed": false,
 				"internalType": "uint256",
+				"name": "CPF",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "idMedicamento",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "nomeMedicamento",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "tipoAcao",
+				"type": "string"
+			}
+		],
+		"name": "medicamentoAlterado",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
 				"name": "id",
 				"type": "uint256"
 			},
@@ -25,9 +56,46 @@ var abi = [
 				"internalType": "string",
 				"name": "dataFimTratamento",
 				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "tipoAcao",
+				"type": "string"
 			}
 		],
 		"name": "medicamentoCadastrado",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "CPF",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "idMedicamento",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "nomeMedicamento",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "tipoAcao",
+				"type": "string"
+			}
+		],
+		"name": "medicamentoDeletado",
 		"type": "event"
 	},
 	{
@@ -44,9 +112,65 @@ var abi = [
 				"internalType": "uint256",
 				"name": "CPF",
 				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "tipoAcao",
+				"type": "string"
+			}
+		],
+		"name": "pacienteAlterado",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "nome",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "CPF",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "tipoAcao",
+				"type": "string"
 			}
 		],
 		"name": "pacienteCadastrado",
+		"type": "event"
+	},
+	{
+		"anonymous": false,
+		"inputs": [
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "nome",
+				"type": "string"
+			},
+			{
+				"indexed": false,
+				"internalType": "uint256",
+				"name": "CPF",
+				"type": "uint256"
+			},
+			{
+				"indexed": false,
+				"internalType": "string",
+				"name": "tipoAcao",
+				"type": "string"
+			}
+		],
+		"name": "pacienteDeletado",
 		"type": "event"
 	},
 	{
@@ -114,13 +238,7 @@ var abi = [
 			}
 		],
 		"name": "cadastrarPaciente",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
+		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -140,13 +258,7 @@ var abi = [
 			}
 		],
 		"name": "deletarMedicamentoPaciente",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
+		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -156,18 +268,12 @@ var abi = [
 		"inputs": [
 			{
 				"internalType": "uint256",
-				"name": "CPF",
+				"name": "_CPF",
 				"type": "uint256"
 			}
 		],
 		"name": "deletarPaciente",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
+		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -216,13 +322,7 @@ var abi = [
 			}
 		],
 		"name": "editarMedicamento",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
+		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
@@ -252,13 +352,7 @@ var abi = [
 			}
 		],
 		"name": "editarPaciente",
-		"outputs": [
-			{
-				"internalType": "bool",
-				"name": "",
-				"type": "bool"
-			}
-		],
+		"outputs": [],
 		"payable": false,
 		"stateMutability": "nonpayable",
 		"type": "function"
