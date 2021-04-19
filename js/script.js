@@ -179,11 +179,25 @@ function inicializaInterface() {
   document.getElementById("sendEditarPaciente").onclick = editarPaciente;
   document.getElementById("sendEditarMedicamento").onclick = editarMedicamento;
 
+    // Eventos Paciente
   DApp.contracts.registrosPaciente.getPastEvents("pacienteCadastrado", { fromBlock: 0, toBlock: "latest" }).then((result) => registraEventoPaciente(result)); 
   DApp.contracts.registrosPaciente.events.pacienteCadastrado((error, event) => registraEventoPaciente([event]));  
 
+  DApp.contracts.registrosPaciente.getPastEvents("pacienteDeletado", { fromBlock: 0, toBlock: "latest" }).then((result) => registraEventoPaciente(result));
+  DApp.contracts.registrosPaciente.events.pacienteDeletado((error, event) => registraEventoPaciente([event])); 
+
+  DApp.contracts.registrosPaciente.getPastEvents("pacienteAlterado", { fromBlock: 0, toBlock: "latest" }).then((result) => registraEventoPaciente(result));
+  DApp.contracts.registrosPaciente.events.pacienteAlterado((error, event) => registraEventoPaciente([event]));
+
+  // Eventos Medicamentos
   DApp.contracts.registrosPaciente.getPastEvents("medicamentoCadastrado", { fromBlock: 0, toBlock: "latest" }).then((result) => registraEventoMedicamento(result)); 
-  DApp.contracts.registrosPaciente.events.medicamentoCadastrado((error, event) => registraEventoMedicamento([event]));  
+  DApp.contracts.registrosPaciente.events.medicamentoCadastrado((error, event) => registraEventoMedicamento([event]));
+
+  DApp.contracts.registrosPaciente.getPastEvents("medicamentoDeletado", { fromBlock: 0, toBlock: "latest" }).then((result) => registraEventoMedicamento(result)); 
+  DApp.contracts.registrosPaciente.events.medicamentoDeletado((error, event) => registraEventoMedicamento([event]));  
+
+  DApp.contracts.registrosPaciente.getPastEvents("medicamentoAlterado", { fromBlock: 0, toBlock: "latest" }).then((result) => registraEventoMedicamento(result)); 
+  DApp.contracts.registrosPaciente.events.medicamentoAlterado((error, event) => registraEventoMedicamento([event]));  
   
 }
 
@@ -196,14 +210,17 @@ function registraEventoPaciente(eventos) {
     td1.innerHTML = "Paciente";
     let td2 = document.createElement("td");
     td2.innerHTML = evento["returnValues"]["nome"];
-    let td3 = document.createElement("td");  
-    td3.innerHTML = "<a href='https://ropsten.etherscan.io/tx/"+ evento["transactionHash"] +"'>" + evento["transactionHash"] + "</a>";
+    let td3 = document.createElement("td");
+    td3.innerHTML = evento["returnValues"]["CPF"] + " (CPF)";
     let td4 = document.createElement("td");
-    td4.innerHTML = evento["returnValues"]["CPF"] + " (CPF)";
+    td4.innerHTML = evento["returnValues"]["tipoAcao"];
+    let td5 = document.createElement("td");  
+    td5.innerHTML = "<a href='https://ropsten.etherscan.io/tx/"+ evento["transactionHash"] +"'>" + evento["transactionHash"] + "</a>";
     tr.appendChild(td1);
     tr.appendChild(td2);
-    tr.appendChild(td4);
     tr.appendChild(td3);
+    tr.appendChild(td4);
+    tr.appendChild(td5);
     table.appendChild(tr);
   });
 }
@@ -216,14 +233,17 @@ function registraEventoMedicamento(eventos) {
     td1.innerHTML = "Medicamento";
     let td2 = document.createElement("td");
     td2.innerHTML = evento["returnValues"]["nomeMedicamento"];
-    let td3 = document.createElement("td");  
-    td3.innerHTML = "<a href='https://ropsten.etherscan.io/tx/"+ evento["transactionHash"] +"'>" + evento["transactionHash"] + "</a>";
+    let td3 = document.createElement("td");
+    td3.innerHTML = evento["returnValues"]["id"] + " (ID)";
     let td4 = document.createElement("td");
-    td4.innerHTML = evento["returnValues"]["id"] + " (ID)";
+    td4.innerHTML = evento["returnValues"]["tipoAcao"];
+    let td5 = document.createElement("td");  
+    td5.innerHTML = "<a href='https://ropsten.etherscan.io/tx/"+ evento["transactionHash"] +"'>" + evento["transactionHash"] + "</a>";
     tr.appendChild(td1);
     tr.appendChild(td2);
+    tr.appendChild(td3);
     tr.appendChild(td4);
-    tr.appendChild(td3); 
+    tr.appendChild(td5);
     table.appendChild(tr);
   });
 }
