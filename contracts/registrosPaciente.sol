@@ -3,22 +3,20 @@
 // Conta do contrato:
 
 pragma solidity ^0.5.0;
-pragma experimental ABIEncoderV2; //usado para tentar retornar o array Medicamentos[]
+pragma experimental ABIEncoderV2; //usado para tentar retornar a struct Paciente
 
 import "./Owned.sol";
 
 contract RegistroPaciente is Mortal {
 
-    // Eventos Paciente
+    // Eventos
     event pacienteCadastrado(string nome, uint CPF, string tipoAcao);
-    event pacienteDeletado(string nome, uint CPF, string tipoAcao); // FALTA POR
-    event pacienteAlterado(string nome, uint CPF, string tipoAcao); //  FALTA POR
-
-    // Eventos Medicamentos
-    event medicamentoCadastrado(uint id, string nomeMedicamento, string dataInicioTratamento, string dataFimTratamento, string tipoAcao);
-    event medicamentoDeletado(uint CPF, uint idMedicamento, string nomeMedicamento, string tipoAcao); //    FALTAR POR
-    event medicamentoAlterado(uint CPF, uint idMedicamento, string nomeMedicamento, string tipoAcao); //    FALTAR POR
+    event pacienteDeletado(string nome, uint CPF, string tipoAcao);
+    event pacienteAlterado(string nome, uint CPF, string tipoAcao);
     
+    event medicamentoCadastrado(uint id, string nomeMedicamento, string dataInicioTratamento, string dataFimTratamento, string tipoAcao);
+    event medicamentoDeletado(uint CPF, uint idMedicamento, string nomeMedicamento, string tipoAcao);
+    event medicamentoAlterado(uint CPF, uint idMedicamento, string nomeMedicamento, string tipoAcao);
     
     // Características de um paciente, dados obrigatórios para o cadastro
     struct Paciente {
@@ -50,12 +48,11 @@ contract RegistroPaciente is Mortal {
     *FUNCOES DE CADASTRO
     */
     //Cadastrar Paciente
-    function cadastrarPaciente(string memory _nome, uint _CPF, string memory _dataNascimento, string memory _sexo) public returns (bool) {
-        //uint id = registros.length + 1;
+    function cadastrarPaciente(string memory _nome, uint _CPF, string memory _dataNascimento, string memory _sexo) public {
         registros.push(Paciente(_nome,_CPF,_dataNascimento, _sexo));
         chaveCpfId[_CPF] = registros.length;
-        emit pacienteCadastrado(_nome, _CPF, "Cadastro");
-        return true;
+        string memory tipoAcao = "cadastrar";
+        emit pacienteCadastrado(_nome, _CPF, tipoAcao);
     }
     
     //Cadastrar remedios receitados ao Paciente
@@ -63,7 +60,8 @@ contract RegistroPaciente is Mortal {
     string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         registroMedicamentos[CPF].push(Medicamento(_nomeMedicoReceitou, _codigoMedicamento, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento));
-        emit medicamentoCadastrado(CPF, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento, "Cadastro");
+        string memory tipoAcao = "cadastrar";
+        emit medicamentoCadastrado(_codigoMedicamento, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento, tipoAcao);
         
     }
     
@@ -72,28 +70,30 @@ contract RegistroPaciente is Mortal {
     */
     // Editar registro do paciente, apenas nao eh permitido edicao do CPF
     // Caso o CPF tenha sido inserido errado, delete o registro e realize o cadastro novamente
-    function editarPaciente(uint _CPF, string memory _nome, string memory _dataNascimento, string memory _sexo) public returns (bool) {
+    function editarPaciente(uint _CPF, string memory _nome, string memory _dataNascimento, string memory _sexo) public {
         require(chaveCpfId[_CPF] != 0, "CPF buscado não existe!");
         uint index = chaveCpfId[_CPF]-1;
         registros[index].nome = _nome;
         registros[index].dataNascimento = _dataNascimento;
         registros[index].sexo = _sexo;
-        return true;
+        string memory tipoAcao = "editar";
+        emit pacienteAlterado(registros[index].nome, registros[index].CPF, tipoAcao);
     }
     
     // Editar Medicamento especifico, precisa-se do codigo do medicamento e CPF para encontrar o paciente
     // Eh realizada a edicao de todos os parametros exceto o codigo do medicamento, em caso de erro no codigo do medicmento recomenda-se
     // deletar o cadastro do medicamento e realizar o cadastro novamente
     function editarMedicamento(uint CPF, uint _codigoMedicamento, string memory _nomeMedicoReceitou, 
-    string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public returns (bool) {
+    string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = getMedicamento(CPF, _codigoMedicamento);
         registroMedicamentos[CPF][index].nomeMedicoReceitou = _nomeMedicoReceitou;
         registroMedicamentos[CPF][index].nomeMedicamento = _nomeMedicamento;
         registroMedicamentos[CPF][index].dataInicioTratamento = _dataInicioTratamento;
         registroMedicamentos[CPF][index].dataFimTratamento = _dataFimTratamento;
-        
-        return true;
+        string memory tipoAcao = "editar";
+        emit medicamentoAlterado(registros[chaveCpfId[CPF]-1].CPF, registroMedicamentos[CPF][index].codigoMedicamento, 
+        registroMedicamentos[CPF][index].nomeMedicamento, tipoAcao);
     }
     
     
@@ -101,26 +101,33 @@ contract RegistroPaciente is Mortal {
     *FUNCOES DE EXCLUSAO
     */
     //Excluir paciente dos registros
-    function deletarPaciente(uint CPF) public returns (bool) {
-        require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
-        uint index = chaveCpfId[CPF]-1;
+    function deletarPaciente(uint _CPF) public {
+        require(chaveCpfId[_CPF] != 0, "CPF buscado não existe!");
+        uint index = chaveCpfId[_CPF]-1;
+        string memory nomeDeletado = registros[index].nome;
+        uint CPFDeletado = registros[index].CPF;
         uint CPF_ultimo_cadastrado = registros[registros.length-1].CPF;
         // Remove do array registros o pacinte do indice (index), copia o o ultimo registro do array 
         // para o lugar delete e faz o pop(), removendo o ultimo elemento do array
         removeNoOrder(index);
         chaveCpfId[CPF_ultimo_cadastrado] = index+1;
-        delete chaveCpfId[CPF];
-        delete registroMedicamentos[CPF];
-        return true;
+        delete chaveCpfId[_CPF];
+        delete registroMedicamentos[_CPF];
+        string memory tipoAcao = "excluir";
+        emit pacienteDeletado(nomeDeletado, CPFDeletado, tipoAcao);
         
     }
     // Excluir um medicamento, atraves do CPF do paciente e codigo do medicamento cadastrado
-    function deletarMedicamentoPaciente(uint CPF, uint _codigoMedicamento) public returns (bool){
+    function deletarMedicamentoPaciente(uint CPF, uint _codigoMedicamento) public {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = getMedicamento(CPF, _codigoMedicamento);
-        //delete registroMedicamentos[CPF][index];
+        uint i = chaveCpfId[CPF]-1;
+        uint CPFpaciente = registros[i].CPF;
+        uint codigoMedicamento = registroMedicamentos[CPF][index].codigoMedicamento;
+        string memory nomeMedicamento = registroMedicamentos[CPF][index].nomeMedicamento;
         removeMedicamentoInOrder(CPF, index);
-        return true;
+        string memory tipoAcao = "excluir";
+        emit medicamentoDeletado(CPFpaciente, codigoMedicamento, nomeMedicamento, tipoAcao);
     }
     
     
