@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Registro de Pacientes</title>
+    <link
+      href="https://fonts.googleapis.com/css?family=Open Sans:400,700"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link href="css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+  </head>
+
+  <!-- Cabeçalho da Página -->
+  <body class="bg-light">
+    <div class="container">
+      <div class="py-5 text-center">
+        <h2>Registro de Pacientes</h2>
+        <p class="lead">
+          Desenvolvido por Wesley Gurgel e Igor Silva.
+        </p>
+      </div>
+
+
+      <!-- Detalhes da Concessionária - Métodos que sejam VIEW -->
+      <div class="row">
+        <div class="col-md order-md mb">
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Registro Pacientes IMD</span>
+ <!--            <span class="badge badge-secondary badge-pill" id="preco"
+              >Preço da Rifa: -</span
+            >-->
+          </h4>
+          <ul class="list-group mb-3">
+
+            <li
+              class="list-group-item d-flex justify-content-between lh-condensed"
+            >
+              <div>
+                <h6 class="my-0">Ver Paciente</h6>
+              </div>
+              <span id="ver-paciente" class="text-muted"></span>
+            </li>
+
+            <li
+              class="list-group-item d-flex justify-content-between lh-condensed"
+            >
+              <div>
+                <h6 class="my-0">Ver Medicamentos Pacientes</h6>
+              </div>
+              <span class="text-muted" id="medicamentos-paciente"></span>
+            </li>
+
+            <li
+            class="list-group-item d-flex justify-content-between lh-condensed"
+          >
+            <div>
+              <h6 class="my-0">Ver Data Inicio e Fim Medicamento</h6>
+            </div>
+            <span class="text-muted" id="data-inicio-fim-medicamento"></span>
+          </li>
+
+          <li
+            class="list-group-item d-flex justify-content-between lh-condensed"
+          >
+            <div>
+              <h6 class="my-0">Ver Último Medicamento</h6>
+            </div>
+            <span class="text-muted" id="ultimo-medicamento"></span>
+          </li>
+          </ul>
+
+
+          <!-- CONSULTAS PARA OS MÉTODOS -->
+          
+          <h4 class="d-flex justify-content-between align-items-center mb-3">
+            <span class="text-muted">Consultas</span>
+          </h4>
+          <!-- FORM PARA OS MÉTODOS INPUT -->
+          <form class="card p-2">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="CPFverPaciente"
+                placeholder="CPF Paciente"
+              />
+              <div class="input-group-append">
+                <button type="button" id="sendverPaciente" class="btn btn-secondary">
+                  Ver Paciente!
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <form class="card p-2">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="CPFverMedicamentos"
+                placeholder="CPF Paciente"
+              />
+              <div class="input-group-append">
+                <button type="button" id="sendverMedicamentos" class="btn btn-secondary">
+                  Ver Medicamentos Paciente!
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <form class="card p-2">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="CPFDataInicioFimMedicamento"
+                placeholder="CPF Paciente"
+              />
+              <input
+                type="text"
+                class="form-control"
+                id="CodigoDataInicioFimMedicamento"
+                placeholder="Código Medicamento"
+              />
+              <div class="input-group-append">
+                <button type="button" id="sendverInicioFimMedicamento" class="btn btn-secondary">
+                  Ver Data Inicio e Fim Medicamento!
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <form class="card p-2">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="CPFUltimoMedicamento"
+                placeholder="CPF Paciente"
+              />
+              <div class="input-group-append">
+                <button type="button" id="sendverUltimoMedicamento" class="btn btn-secondary">
+                  Ver Último Medicamento
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <br/>
+
+        </div>
+      </div>
+
+
+      <!-- ESCRITAS NO CÓDIGO -->
+
+      <h4 class="d-flex justify-content-between align-items-center mb-3">
+        <span class="text-muted">Inserir no Contrato</span>
+      </h4>
+      <!-- FORM PARA OS MÉTODOS INPUT -->
+
+        <!-- PACIENTE -->
+      <form class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="NomeCadastrarPaciente"
+            placeholder="Nome"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="CPFCadastrarPaciente"
+            placeholder="CPF"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="DataNascimentoCadastrarPaciente"
+            placeholder="Data Nascimento: 27-06-98"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="SexoCadastrarPaciente"
+            placeholder="Sexo: M ou F"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendCadastrarPaciente" class="btn btn-secondary">
+              Cadastrar Paciente
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <form class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="CPFDeletarPaciente"
+            placeholder="CPF"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendDeletarPaciente" class="btn btn-secondary">
+              Deletar Paciente
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- Medicamento -->
+
+      <form class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="CPFCadastrarMedicamento"
+            placeholder="CPF"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="MedicoCadastrarMedicamento"
+            placeholder="Médico"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="CodigoMedicamentoCadastrarMedicamento"
+            placeholder="Código Medicamento"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="NomeMedicamentoCadastrarMedicamento"
+            placeholder="Medicamento"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="inicioCadastrarMedicamento"
+            placeholder="Data Inicio"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="fimCadastrarMedicamento"
+            placeholder="Data Fim"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendCadastrarMedicamento" class="btn btn-secondary">
+              Cadastrar Medicamento
+            </button>
+          </div>
+        </div>
+      </form>
+
+
+      <form class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="CPFDeletarMedicamentoPaciente"
+            placeholder="CPF"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="CodigoMedicamentoDeletarPaciente"
+            placeholder="Código Medicamento"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendDeletarMedicamentoPaciente" class="btn btn-secondary">
+              Deletar Medicamento do Paciente
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <!-- EDITAR -->
+
+      <form class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="CPFEditarPaciente"
+            placeholder="CPF (FIXO)"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="NomeEditarPaciente"
+            placeholder="Nome"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="DataNascimentoEditarPaciente"
+            placeholder="Data Nascimento"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="SexoEditarPaciente"
+            placeholder="Sexo"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendEditarPaciente" class="btn btn-secondary">
+              Editar Paciente
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <form class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="CPFEditarMedicamento"
+            placeholder="CPF (FIXO)"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="CodigoMedicamentoEditarMedicamento"
+            placeholder="Código Medicamento"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="nomeMedicoEditarMedicamento"
+            placeholder="Médico"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="MedicamentoEditarMedicamento"
+            placeholder="Medicamento"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="DataInicioEditarMedicamento"
+            placeholder="Inicio"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="DataFimEditarMedicamento"
+            placeholder="Fim"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendEditarMedicamento" class="btn btn-secondary">
+              Editar Medicamento
+            </button>
+          </div>
+        </div>
+      </form>
+
+        
+
+      <br>
+      <br>
+
+      <!-- TABELA FINAL PARA DETALHES -->
+      <div class="row">
+        <table class="table">
+          <thead>
+            <tr>
+              <th style="text-align: center;" scope="col" colspan="3">Histórico de Cadastro</th>
+            </tr>
+            <tr>
+                <th class="small text-center" scope="col">Tipo</th>
+                <th class="small text-center" scope="col">Nome</th>
+                <th class="small text-center" scope="col">Transação</th>
+              </tr>
+          </thead>
+          <tbody id="events" class="small text-center">
+          </tbody>
+        </table>
+      </div>
+
+      <footer class="my-5 pt-5 text-muted text-center text-small">
+        <p class="mb-1">IMD - IMD0293</p>
+      </footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="js/abi.js"></script>
+    <script src="js/script.js"></script>
+  </body>
+</html>
