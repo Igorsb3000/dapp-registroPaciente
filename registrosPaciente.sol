@@ -3,7 +3,7 @@
 // Conta do contrato:
 
 pragma solidity ^0.5.0;
-pragma experimental ABIEncoderV2; //usado para tentar retornar a struct Paciente
+pragma experimental ABIEncoderV2; //usado para tentar retornar o array Medicamentos[]
 
 import "./Owned.sol";
 
@@ -97,10 +97,12 @@ contract RegistroPaciente is Mortal {
     function deletarPaciente(uint CPF) public returns (bool) {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = chaveCpfId[CPF]-1;
-        /* Remove do array registros o pacinte do indice (index), copia o o ultimo registro do array 
-        para o lugar delete e faz o pop(), removendo o ultimo elemento do array*/
+        uint CPF_ultimo_cadastrado = registros[registros.length-1].CPF;
+        // Remove do array registros o pacinte do indice (index), copia o o ultimo registro do array 
+        // para o lugar delete e faz o pop(), removendo o ultimo elemento do array
         removeNoOrder(index);
-        delete chaveCpfId[CPF]; 
+        chaveCpfId[CPF_ultimo_cadastrado] = index+1;
+        delete chaveCpfId[CPF];
         delete registroMedicamentos[CPF];
         return true;
         
