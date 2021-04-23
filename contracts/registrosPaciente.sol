@@ -8,8 +8,17 @@ pragma experimental ABIEncoderV2; //usado para tentar retornar a struct Paciente
 import "./Owned.sol";
 
 contract RegistroPaciente is Mortal {
+    
+    modifier onlyDoctor {
+        require(chaveCrmId[enderecoParaCRM[msg.sender]] != 0, "Médico não registrado no sistema!");
+        _; 
+    }
 
     // Eventos
+    event medicoCadastrado(string nome, uint CRM, string tipoAcao);
+    event medicoDeletado(string nome, uint CRM, string tipoAcao);
+    event medicoAlterado(string nome, uint CRM, string tipoAcao);
+    
     event pacienteCadastrado(string nome, uint CPF, string tipoAcao);
     event pacienteDeletado(string nome, uint CPF, string tipoAcao);
     event pacienteAlterado(string nome, uint CPF, string tipoAcao);
@@ -26,6 +35,15 @@ contract RegistroPaciente is Mortal {
         string sexo;
     }
     
+    // Características de um médico, dados obrigatórios para o cadastro
+    struct Medico {
+        address endereco;
+        string nome;
+        uint CRM;
+        string especialidade;
+        string municipioLotacao;
+    }
+    
     // Características do medicamento, dados obrigatórios para o cadastro
     struct Medicamento {
         string nomeMedicoReceitou;
@@ -35,73 +53,123 @@ contract RegistroPaciente is Mortal {
         string dataFimTratamento;
     }
     
+    // Endereco do medico => CRM
+    mapping (address => uint) enderecoParaCRM;
+    
+    // CRM => index no array medicos
+    mapping (uint => uint) chaveCrmId;
+    
+    // Array com todos os medicos cadastrados    
+    Medico[] public medicos;
+    
+    
     // Cada CPF (paciente) possui um array de registros de medicamentos
     mapping (uint => Medicamento[]) registroMedicamentos;
     
     // CPF => index no array registros
     mapping (uint => uint) chaveCpfId;
     
+    
     // Array com todos os pacientes cadastrados
     Paciente[] public registros;
+    
+    
+   // Funcao utilizada no front-end para mostrar funcoes exclusivas dos medicos
+   function isDoctor() public view returns (bool) {
+       if(chaveCrmId[enderecoParaCRM[msg.sender]] != 0) {
+           return true;
+       }
+       return false;
+   }
+   
+   // Funcao utilizada no front-end para mostrar funcoes exclusivas do dono do contrato
+   function isOwner () public view returns (bool) {
+       if (msg.sender == owner) {
+           return true;
+       }
+       return false;
+   }
+    
     
     /*
     *FUNCOES DE CADASTRO
     */
     //Cadastrar Paciente
-    function cadastrarPaciente(string memory _nome, uint _CPF, string memory _dataNascimento, string memory _sexo) public {
-        registros.push(Paciente(_nome,_CPF,_dataNascimento, _sexo));
+    function cadastrarPaciente(string memory _nome, uint _CPF, string memory _dataNascimento, string memory _sexo) public onlyDoctor {
+        registros.push(Paciente(_nome, _CPF, _dataNascimento, _sexo));
         chaveCpfId[_CPF] = registros.length;
-        string memory tipoAcao = "cadastrar";
+        string memory tipoAcao = "CADASTRAR";
         emit pacienteCadastrado(_nome, _CPF, tipoAcao);
     }
     
     //Cadastrar remedios receitados ao Paciente
-    function cadastrarMedicamento(uint CPF, string memory _nomeMedicoReceitou, uint _codigoMedicamento, 
-    string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public {
+    function cadastrarMedicamento(uint CPF, uint _codigoMedicamento, string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public onlyDoctor {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
+        uint index = chaveCrmId[enderecoParaCRM[msg.sender]]-1;
+        string memory _nomeMedicoReceitou = medicos[index].nome;
         registroMedicamentos[CPF].push(Medicamento(_nomeMedicoReceitou, _codigoMedicamento, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento));
-        string memory tipoAcao = "cadastrar";
+        string memory tipoAcao = "CADASTRAR";
         emit medicamentoCadastrado(_codigoMedicamento, _nomeMedicamento, _dataInicioTratamento, _dataFimTratamento, tipoAcao);
-        
     }
+    
+    function cadastrarMedico(address _endereco, string memory _nome, uint _CRM, string memory _especialidade, string memory _municipioLotacao) public onlyOwner {
+        medicos.push(Medico(_endereco, _nome, _CRM, _especialidade, _municipioLotacao));
+        chaveCrmId[_CRM] = medicos.length;
+        enderecoParaCRM[_endereco] = _CRM;
+        string memory tipoAcao = "CADASTRAR";
+        emit medicoCadastrado(_nome, _CRM, tipoAcao);
+    }
+    
     
     /*
     *FUNCOES DE EDITACAO
     */
     // Editar registro do paciente, apenas nao eh permitido edicao do CPF
     // Caso o CPF tenha sido inserido errado, delete o registro e realize o cadastro novamente
-    function editarPaciente(uint _CPF, string memory _nome, string memory _dataNascimento, string memory _sexo) public {
+    function editarPaciente(uint _CPF, string memory _nome, string memory _dataNascimento, string memory _sexo) public onlyDoctor {
         require(chaveCpfId[_CPF] != 0, "CPF buscado não existe!");
         uint index = chaveCpfId[_CPF]-1;
         registros[index].nome = _nome;
         registros[index].dataNascimento = _dataNascimento;
         registros[index].sexo = _sexo;
-        string memory tipoAcao = "editar";
+        string memory tipoAcao = "EDITAR";
         emit pacienteAlterado(registros[index].nome, registros[index].CPF, tipoAcao);
     }
     
     // Editar Medicamento especifico, precisa-se do codigo do medicamento e CPF para encontrar o paciente
     // Eh realizada a edicao de todos os parametros exceto o codigo do medicamento, em caso de erro no codigo do medicmento recomenda-se
     // deletar o cadastro do medicamento e realizar o cadastro novamente
-    function editarMedicamento(uint CPF, uint _codigoMedicamento, string memory _nomeMedicoReceitou, 
-    string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public {
+    function editarMedicamento(uint CPF, uint _codigoMedicamento, string memory _nomeMedicamento, string memory _dataInicioTratamento, string memory _dataFimTratamento) public onlyDoctor{
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
+        uint indexMedico = chaveCrmId[enderecoParaCRM[msg.sender]]-1; //Colocamos o nome do médico que editou o medicamento, pois pode ser outro médico
         uint index = getMedicamento(CPF, _codigoMedicamento);
-        registroMedicamentos[CPF][index].nomeMedicoReceitou = _nomeMedicoReceitou;
+        registroMedicamentos[CPF][index].nomeMedicoReceitou = medicos[indexMedico].nome;
         registroMedicamentos[CPF][index].nomeMedicamento = _nomeMedicamento;
         registroMedicamentos[CPF][index].dataInicioTratamento = _dataInicioTratamento;
         registroMedicamentos[CPF][index].dataFimTratamento = _dataFimTratamento;
-        string memory tipoAcao = "editar";
+        string memory tipoAcao = "EDITAR";
         emit medicamentoAlterado(registros[chaveCpfId[CPF]-1].CPF, registroMedicamentos[CPF][index].codigoMedicamento, 
         registroMedicamentos[CPF][index].nomeMedicamento, tipoAcao);
     }
     
+    // Editar dados do medico cadastrado, não é possivel editar o CRM
+    // Em caso de erro no CRM delete o medico e faça o cadastro dele novamente
+    function editarMedico(uint CRM, string memory _nome, string memory _especialidade, string memory _municipioLotacao) public onlyOwner {
+        require(chaveCrmId[CRM] != 0, "CRM buscado não existe");
+        uint index = chaveCrmId[CRM]-1;
+        medicos[index].nome = _nome;
+        medicos[index].especialidade = _especialidade;
+        medicos[index].municipioLotacao = _municipioLotacao;
+        string memory tipoAcao = "EDITAR";
+        emit medicoAlterado(medicos[index].nome, medicos[index].CRM, tipoAcao);
+    }
+        
     
     /*
     *FUNCOES DE EXCLUSAO
     */
     //Excluir paciente dos registros
-    function deletarPaciente(uint _CPF) public {
+    function deletarPaciente(uint _CPF) public onlyDoctor {
         require(chaveCpfId[_CPF] != 0, "CPF buscado não existe!");
         uint index = chaveCpfId[_CPF]-1;
         string memory nomeDeletado = registros[index].nome;
@@ -113,12 +181,12 @@ contract RegistroPaciente is Mortal {
         chaveCpfId[CPF_ultimo_cadastrado] = index+1;
         delete chaveCpfId[_CPF];
         delete registroMedicamentos[_CPF];
-        string memory tipoAcao = "excluir";
+        string memory tipoAcao = "EXCLUIR";
         emit pacienteDeletado(nomeDeletado, CPFDeletado, tipoAcao);
-        
     }
+    
     // Excluir um medicamento, atraves do CPF do paciente e codigo do medicamento cadastrado
-    function deletarMedicamentoPaciente(uint CPF, uint _codigoMedicamento) public {
+    function deletarMedicamentoPaciente(uint CPF, uint _codigoMedicamento) public onlyDoctor {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = getMedicamento(CPF, _codigoMedicamento);
         uint i = chaveCpfId[CPF]-1;
@@ -126,8 +194,26 @@ contract RegistroPaciente is Mortal {
         uint codigoMedicamento = registroMedicamentos[CPF][index].codigoMedicamento;
         string memory nomeMedicamento = registroMedicamentos[CPF][index].nomeMedicamento;
         removeMedicamentoInOrder(CPF, index);
-        string memory tipoAcao = "excluir";
+        string memory tipoAcao = "EXCLUIR";
         emit medicamentoDeletado(CPFpaciente, codigoMedicamento, nomeMedicamento, tipoAcao);
+    }
+    
+    function deletarMedico(uint _CRM) public onlyOwner {
+        require(chaveCrmId[_CRM] != 0, "CRM buscado não existe");
+        uint index = chaveCrmId[_CRM]-1;
+        string memory nomeDeletado = medicos[index].nome;
+        uint CRMDeletado = medicos[index].CRM;
+        address enderecoDeletado = medicos[_CRM].endereco;
+        // Faço isso porque o removeNoOrder vai pegar o ultimo cadastro do array e colcocar no lugar do que será deletado, então é removido
+        // o ultimo cadastro do array, é preciso atualizar o ID no chaveCrmId
+        uint CRM_ultimo_cadastrado = medicos[medicos.length-1].CRM;
+        removeNoOrder(index);
+        chaveCrmId[CRM_ultimo_cadastrado] = index+1;
+        delete enderecoParaCRM[enderecoDeletado];
+        delete chaveCrmId[_CRM];
+        delete medicos[_CRM];
+        string memory tipoAcao = "EXCLUIR";
+        emit medicoDeletado(nomeDeletado, CRMDeletado, tipoAcao);
     }
     
     
@@ -136,7 +222,7 @@ contract RegistroPaciente is Mortal {
     *FUNCOES DE BUSCA
     */
     //Buscar Paciente
-    function verPaciente(uint CPF) public view returns (string memory, uint, string memory, string memory) {//Paciente memory
+    function verPaciente(uint CPF) public view returns (string memory, uint, string memory, string memory) {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = chaveCpfId[CPF]-1;
         //return registros[index];
@@ -157,7 +243,7 @@ contract RegistroPaciente is Mortal {
         return (registroMedicamentos[CPF][index].dataInicioTratamento, registroMedicamentos[CPF][index].dataFimTratamento);
     }
     // Retorna o ultimo medicamento cadastrado para um determinado paciente
-    function verUltimoMedicamento(uint CPF) public view returns (string memory, uint, string memory, string memory, string memory){ //todo Medicamento memory
+    function verUltimoMedicamento(uint CPF) public view returns (string memory, uint, string memory, string memory, string memory){
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         require(registroMedicamentos[CPF].length != 0, "Paciente não possui medicamentos cadastrados");
         uint index = registroMedicamentos[CPF].length-1;
@@ -166,6 +252,31 @@ contract RegistroPaciente is Mortal {
         return (registroMedicamentos[CPF][index].nomeMedicoReceitou, registroMedicamentos[CPF][index].codigoMedicamento, 
         registroMedicamentos[CPF][index].nomeMedicamento, registroMedicamentos[CPF][index].dataInicioTratamento, registroMedicamentos[CPF][index].dataFimTratamento);
     }
+    
+    // Retorna o Medico de acordo com o CRM passado por parametro
+    function verMedicoPorCRM(uint _CRM) public view returns (string memory) {
+        require(chaveCrmId[_CRM] != 0, "CRM buscado não existe");
+        uint index = chaveCrmId[_CRM]-1;
+        return medicos[index].nome;
+    }
+    
+    // TODO: Exibir front-end a lista os medicos com o CRM
+    // Retorna o array como todos os medicos cadastrados
+    function verTodosMedicos() public view returns (Medico[] memory) {
+        require(medicos.length != 0, "O sistema não possui nenhum médico cadastrado!");
+        return medicos;
+    }
+    
+    
+    /*
+    *FUNCAO PARA GERAR RELATORIO DE UM PACIENTE
+    */
+    function gerarRelatorioPaciente(uint _CPF) public onlyDoctor view returns (Paciente memory, Medicamento[] memory) {
+        require(chaveCpfId[_CPF] != 0, "CPF buscado não existe!");
+        uint index = chaveCpfId[_CPF]-1;
+        return (registros[index], registroMedicamentos[_CPF]);
+    }
+    
     
     /*
     *FUNCOES AUXILIARES
