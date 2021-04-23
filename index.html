@@ -68,6 +68,24 @@
             </div>
             <span class="text-muted" id="ultimo-medicamento"></span>
           </li>
+
+          <li
+            class="list-group-item d-flex justify-content-between lh-condensed"
+          >
+            <div>
+              <h6 class="my-0">Ver Médico por CRM</h6>
+            </div>
+            <span class="text-muted" id="medico-crm"></span>
+          </li>
+
+          <li
+            class="list-group-item d-flex justify-content-between lh-condensed"
+          >
+            <div>
+              <h6 class="my-0">Ver Todos os Médicos</h6>
+            </div>
+            <span class="text-muted" id="todos-medicos"></span>
+          </li>
           </ul>
 
 
@@ -147,6 +165,28 @@
             </div>
           </form>
 
+          <form class="card p-2">
+            <div class="input-group">
+              <input
+                type="text"
+                class="form-control"
+                id="verMedicoCRM"
+                placeholder="CRM do Médico"
+              />
+              <div class="input-group-append">
+                <button type="button" id="sendverMedicoCRM" class="btn btn-secondary">
+                  Ver Medico por CRM
+                </button>
+              </div>
+            </div>
+          </form>
+
+          <form class="card p-2">
+            <button type="button" id="sendverTodosMedicos" class="btn btn-secondary">
+              Ver Todos os Médicos
+            </button>
+          </form>
+
           <br/>
 
         </div>
@@ -156,12 +196,12 @@
       <!-- ESCRITAS NO CÓDIGO -->
 
       <h4 class="d-flex justify-content-between align-items-center mb-3">
-        <span class="text-muted">Inserir no Contrato</span>
+        <span class="text-muted">Controle de Pacientes e Medicamentos (Somente para Médicos)</span>
       </h4>
       <!-- FORM PARA OS MÉTODOS INPUT -->
 
         <!-- PACIENTE -->
-      <form class="card p-2">
+      <form id="formCadastrarPaciente" class="card p-2">
         <div class="input-group">
           <input
             type="text"
@@ -195,7 +235,7 @@
         </div>
       </form>
 
-      <form class="card p-2">
+      <form id="formDeletarPaciente" class="card p-2">
         <div class="input-group">
           <input
             type="text"
@@ -213,19 +253,13 @@
 
       <!-- Medicamento -->
 
-      <form class="card p-2">
+      <form id="formCadastrarMedicamento" class="card p-2">
         <div class="input-group">
           <input
             type="text"
             class="form-control"
             id="CPFCadastrarMedicamento"
             placeholder="CPF"
-          />
-          <input
-            type="text"
-            class="form-control"
-            id="MedicoCadastrarMedicamento"
-            placeholder="Médico"
           />
           <input
             type="text"
@@ -260,7 +294,7 @@
       </form>
 
 
-      <form class="card p-2">
+      <form id="formDeletarMedicamentoPaciente" class="card p-2">
         <div class="input-group">
           <input
             type="text"
@@ -284,7 +318,7 @@
 
       <!-- EDITAR -->
 
-      <form class="card p-2">
+      <form id="formEditarPaciente" class="card p-2">
         <div class="input-group">
           <input
             type="text"
@@ -318,7 +352,7 @@
         </div>
       </form>
 
-      <form class="card p-2">
+      <form id="formEditarMedicamento" class="card p-2">
         <div class="input-group">
           <input
             type="text"
@@ -364,7 +398,98 @@
         </div>
       </form>
 
-        
+      <hr>
+      <form id="formCadastrarMedico" class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="AdressCadastrarMedico"
+            placeholder="Address"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="NomeCadastrarMedico"
+            placeholder="Nome"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="CRMCadastrarMedico"
+            placeholder="CRM"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="EspecialidadeCadastrarMedico"
+            placeholder="Especialidade"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="LotacaoCadastrarMedico"
+            placeholder="Municipio Lotação"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendTornarMedico" class="btn btn-secondary">
+              Cadastrar Medico
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <form id="formEditarMedico" class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="CRMEditarMedico"
+            placeholder="CRM"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="NomeEditarMedico"
+            placeholder="Nome"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="EspecialidadeEditarMedico"
+            placeholder="Especialidade"
+          />
+          <input
+            type="text"
+            class="form-control"
+            id="LotacaoEditarMedico"
+            placeholder="Municipio Lotação"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendEditarMedico" class="btn btn-secondary">
+              Editar Medico
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <form id="formDeletarMedico" class="card p-2">
+        <div class="input-group">
+          <input
+            type="text"
+            class="form-control"
+            id="CRMDeletarMedico"
+            placeholder="CRM"
+          />
+          <div class="input-group-append">
+            <button type="button" id="sendDeletarMedico" class="btn btn-secondary">
+              Deletar Medico
+            </button>
+          </div>
+        </div>
+      </form>
+      
+      <hr>
 
       <br>
       <br>

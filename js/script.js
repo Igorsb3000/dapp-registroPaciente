@@ -1,5 +1,5 @@
 // ENDEREÇO EHTEREUM DO CONTRATO
-var contractAddress = "0x13946448CfC1C303c024f7C4a99f3541e87FaE60";
+var contractAddress = "0xa16368fC048af0CAcF7D9E0F7A3883dE0507d707";
 
 // Inicializa o objeto DApp
 document.addEventListener("DOMContentLoaded", onDocumentLoad);
@@ -80,6 +80,23 @@ function verUltimoMedicamento() {
   return DApp.contracts.registrosPaciente.methods.verUltimoMedicamento(CPFPaciente).call();
 }
 
+function verMedicoPorCRM() {
+  let CRM = document.getElementById("verMedicoCRM").value;
+  return DApp.contracts.registrosPaciente.methods.verMedicoPorCRM(CRM).call();
+}
+
+function verTodosMedicos(){
+  return DApp.contracts.registrosPaciente.methods.verTodosMedicos().call();
+}
+
+function isDoctor(){
+  return DApp.contracts.registrosPaciente.methods.isDoctor().call({from: DApp.account});
+}
+
+function isOwner(){
+  return DApp.contracts.registrosPaciente.methods.isOwner().call({from: DApp.account});
+}
+
 
 // *** ATUALIZAÇÃO DO HTML *** //
 
@@ -115,6 +132,24 @@ function verUltimoMedicamentoATT(){
   });
 }
 
+function verMedicoPorCRMATT(){
+  verMedicoPorCRM().then((result) => {
+    console.log(result);
+    document.getElementById("medico-crm").innerHTML = result;
+  });
+}
+
+function verTodosMedicosATT(){
+  verTodosMedicos().then((result) => {
+    let myString = "";
+    console.log(result);
+    for(let i=1; i <= result.length ; i++){
+      myString += " Médico " + i + "-> Médico: " + result[0][1]+", CRM: " + result[0][2] + ", Especialidade: "+ result[0][3] + " | ";   
+    }
+    document.getElementById("todos-medicos").innerHTML = myString;
+  });
+}
+
 
 // *** MÉTODOS (de escrita) DO CONTRATO ** //
 
@@ -128,12 +163,11 @@ function cadastrarPaciente(){
 
 function cadastrarMedicamento(){
   let CPFPaciente = document.getElementById("CPFCadastrarMedicamento").value;
-  let NomeMedico = document.getElementById("MedicoCadastrarMedicamento").value;
   let CodigoMedicamento = document.getElementById("CodigoMedicamentoCadastrarMedicamento").value;
   let NomeMedicamento = document.getElementById("NomeMedicamentoCadastrarMedicamento").value;
   let DataInicio = document.getElementById("inicioCadastrarMedicamento").value;
   let DataFim = document.getElementById("fimCadastrarMedicamento").value;
-  return DApp.contracts.registrosPaciente.methods.cadastrarMedicamento(CPFPaciente, NomeMedico, CodigoMedicamento, NomeMedicamento, DataInicio, DataFim).send({ from: DApp.account });
+  return DApp.contracts.registrosPaciente.methods.cadastrarMedicamento(CPFPaciente, CodigoMedicamento, NomeMedicamento, DataInicio, DataFim).send({ from: DApp.account });
 }
 
 function deletarPaciente(){
@@ -156,13 +190,35 @@ function editarPaciente(){
 }
 
 function editarMedicamento(){
-  let CPFPaciente = document.getElementById("CPFEditarMedicamento").value;
+  let CPFPaciente = document.getElementById("AdressCadastrarMedico").value;
   let CodigoMedicamento = document.getElementById("CodigoMedicamentoEditarMedicamento").value;
   let Medico = document.getElementById("nomeMedicoEditarMedicamento").value;
   let Medicamento = document.getElementById("MedicamentoEditarMedicamento").value;
   let DataInicio = document.getElementById("DataInicioEditarMedicamento").value;
   let DataFim = document.getElementById("DataFimEditarMedicamento").value;
   return DApp.contracts.registrosPaciente.methods.editarMedicamento(CPFPaciente, CodigoMedicamento, Medico, Medicamento, DataInicio, DataFim).send({ from: DApp.account });
+}
+
+function cadastrarMedico(){
+  let AdressCadastrarMedico = document.getElementById("AdressCadastrarMedico").value;
+  let NomeCadastrarMedico = document.getElementById("NomeCadastrarMedico").value;
+  let CRMCadastrarMedico = document.getElementById("CRMCadastrarMedico").value;
+  let EspecialidadeCadastrarMedico = document.getElementById("EspecialidadeCadastrarMedico").value;
+  let LotacaoCadastrarMedico = document.getElementById("LotacaoCadastrarMedico").value;
+  return DApp.contracts.registrosPaciente.methods.cadastrarMedico(AdressCadastrarMedico, NomeCadastrarMedico, CRMCadastrarMedico, EspecialidadeCadastrarMedico, LotacaoCadastrarMedico).send({ from: DApp.account });
+}
+
+function editarMedico(){
+  let CRMEditarMedico = document.getElementById("CRMEditarMedico").value;
+  let NomeEditarMedico = document.getElementById("NomeEditarMedico").value;
+  let EspecialidadeEditarMedico = document.getElementById("EspecialidadeEditarMedico").value;
+  let LotacaoEditarMedico = document.getElementById("LotacaoEditarMedico").value;
+  return DApp.contracts.registrosPaciente.methods.editarMedico(CRMCadastrarMedico, NomeCadastrarMedico, EspecialidadeCadastrarMedico, LotacaoCadastrarMedico).send({ from: DApp.account });
+}
+
+function deletarMedico(){
+  let CRMEditarMedico = document.getElementById("CRMDeletarMedico").value;
+  return DApp.contracts.registrosPaciente.methods.deletarMedico(CRMCadastrarMedico).send({ from: DApp.account });
 }
 
 
@@ -172,6 +228,10 @@ function inicializaInterface() {
   document.getElementById("sendverMedicamentos").onclick = verPacienteMedicamentoATT;
   document.getElementById("sendverInicioFimMedicamento").onclick = verInicioFimMedicamentoATT;
   document.getElementById("sendverUltimoMedicamento").onclick = verUltimoMedicamentoATT;
+  document.getElementById("sendverMedicoCRM").onclick = verMedicoPorCRMATT;
+  document.getElementById("sendverTodosMedicos").onclick = verTodosMedicosATT;
+
+
   document.getElementById("sendCadastrarPaciente").onclick = cadastrarPaciente;
   document.getElementById("sendCadastrarMedicamento").onclick = cadastrarMedicamento;
   document.getElementById("sendDeletarPaciente").onclick = deletarPaciente;
@@ -179,7 +239,15 @@ function inicializaInterface() {
   document.getElementById("sendEditarPaciente").onclick = editarPaciente;
   document.getElementById("sendEditarMedicamento").onclick = editarMedicamento;
 
-    // Eventos Paciente
+  //OnlyOWNER
+  document.getElementById("sendTornarMedico").onclick = cadastrarMedico;
+  document.getElementById("sendEditarMedico").onclick = editarMedico;
+  document.getElementById("sendDeletarMedico").onclick = deletarMedico;
+
+
+  atualizaInterface();
+
+  // Eventos Paciente
   DApp.contracts.registrosPaciente.getPastEvents("pacienteCadastrado", { fromBlock: 0, toBlock: "latest" }).then((result) => registraEventoPaciente(result)); 
   DApp.contracts.registrosPaciente.events.pacienteCadastrado((error, event) => registraEventoPaciente([event]));  
 
@@ -199,6 +267,74 @@ function inicializaInterface() {
   DApp.contracts.registrosPaciente.getPastEvents("medicamentoAlterado", { fromBlock: 0, toBlock: "latest" }).then((result) => registraEventoMedicamento(result)); 
   DApp.contracts.registrosPaciente.events.medicamentoAlterado((error, event) => registraEventoMedicamento([event]));  
   
+}
+
+function atualizaInterface(){
+  document.getElementById("formCadastrarPaciente").style.display = "none";
+  isDoctor().then((result) => {
+    if (result) {
+      document.getElementById("formCadastrarPaciente").style.display = "block";
+    }
+  });
+
+  document.getElementById("formDeletarPaciente").style.display = "none";
+  isDoctor().then((result) => {
+    if (result) {
+      document.getElementById("formDeletarPaciente").style.display = "block";
+    }
+  });
+
+  document.getElementById("formCadastrarMedicamento").style.display = "none";
+  isDoctor().then((result) => {
+    if (result) {
+      document.getElementById("formCadastrarMedicamento").style.display = "block";
+    }
+  });
+
+  document.getElementById("formDeletarMedicamentoPaciente").style.display = "none";
+  isDoctor().then((result) => {
+    if (result) {
+      document.getElementById("formDeletarMedicamentoPaciente").style.display = "block";
+    }
+  });
+
+  document.getElementById("formEditarPaciente").style.display = "none";
+  isDoctor().then((result) => {
+    if (result) {
+      document.getElementById("formEditarPaciente").style.display = "block";
+    }
+  });
+
+  document.getElementById("formEditarMedicamento").style.display = "none";
+  isDoctor().then((result) => {
+    if (result) {
+      document.getElementById("formEditarMedicamento").style.display = "block";
+    }
+  });
+
+  document.getElementById("formCadastrarMedico").style.display = "none";
+  isOwner().then((result) => {
+    if (result) {
+      document.getElementById("formCadastrarMedico").style.display = "block";
+    }
+  });
+
+  document.getElementById("formEditarMedico").style.display = "none";
+  isOwner().then((result) => {
+    if (result) {
+      document.getElementById("formEditarMedico").style.display = "block";
+    }
+  });
+
+  document.getElementById("formDeletarMedico").style.display = "none";
+  isOwner().then((result) => {
+    if (result) {
+      document.getElementById("formDeletarMedico").style.display = "block";
+    }
+  })
+
+
+
 }
 
 // *** REGISTRAR EVENTOS *** //

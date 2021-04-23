@@ -83,7 +83,7 @@ contract RegistroPaciente is Mortal {
    }
    
    // Funcao utilizada no front-end para mostrar funcoes exclusivas do dono do contrato
-   function isOwner () public view returns (bool) {
+   function isOwner() public view returns (bool) {
        if (msg.sender == owner) {
            return true;
        }
