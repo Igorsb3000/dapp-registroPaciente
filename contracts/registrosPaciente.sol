@@ -83,7 +83,7 @@ contract RegistroPaciente is Mortal {
    }
    
    // Funcao utilizada no front-end para mostrar funcoes exclusivas do dono do contrato
-   function isOwner() public view returns (bool) {
+   function isOwner () public view returns (bool) {
        if (msg.sender == owner) {
            return true;
        }
@@ -203,15 +203,14 @@ contract RegistroPaciente is Mortal {
         uint index = chaveCrmId[_CRM]-1;
         string memory nomeDeletado = medicos[index].nome;
         uint CRMDeletado = medicos[index].CRM;
-        address enderecoDeletado = medicos[_CRM].endereco;
+        address enderecoDeletado = medicos[index].endereco;
         // Faço isso porque o removeNoOrder vai pegar o ultimo cadastro do array e colcocar no lugar do que será deletado, então é removido
         // o ultimo cadastro do array, é preciso atualizar o ID no chaveCrmId
         uint CRM_ultimo_cadastrado = medicos[medicos.length-1].CRM;
-        removeNoOrder(index);
+        removeNoOrderDoctor(index);
         chaveCrmId[CRM_ultimo_cadastrado] = index+1;
         delete enderecoParaCRM[enderecoDeletado];
         delete chaveCrmId[_CRM];
-        delete medicos[_CRM];
         string memory tipoAcao = "EXCLUIR";
         emit medicoDeletado(nomeDeletado, CRMDeletado, tipoAcao);
     }
@@ -225,7 +224,6 @@ contract RegistroPaciente is Mortal {
     function verPaciente(uint CPF) public view returns (string memory, uint, string memory, string memory) {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         uint index = chaveCpfId[CPF]-1;
-        //return registros[index];
         return (registros[index].nome, registros[index].CPF, registros[index].dataNascimento, registros[index].sexo);
     }
     //Buscar Medicamentos do Paciente
@@ -247,8 +245,6 @@ contract RegistroPaciente is Mortal {
         require(chaveCpfId[CPF] != 0, "CPF buscado não existe!");
         require(registroMedicamentos[CPF].length != 0, "Paciente não possui medicamentos cadastrados");
         uint index = registroMedicamentos[CPF].length-1;
-        //return registroMedicamentos[CPF][index];
-
         return (registroMedicamentos[CPF][index].nomeMedicoReceitou, registroMedicamentos[CPF][index].codigoMedicamento, 
         registroMedicamentos[CPF][index].nomeMedicamento, registroMedicamentos[CPF][index].dataInicioTratamento, registroMedicamentos[CPF][index].dataFimTratamento);
     }
@@ -260,7 +256,6 @@ contract RegistroPaciente is Mortal {
         return medicos[index].nome;
     }
     
-    // TODO: Exibir front-end a lista os medicos com o CRM
     // Retorna o array como todos os medicos cadastrados
     function verTodosMedicos() public view returns (Medico[] memory) {
         require(medicos.length != 0, "O sistema não possui nenhum médico cadastrado!");
@@ -287,6 +282,12 @@ contract RegistroPaciente is Mortal {
         registros.pop();
     }
     
+    // Funcao interna utilizada para deletar um Médico do array medicos e pegar o ultimo Médico do array e colocar no lugar
+    function removeNoOrderDoctor(uint index) internal {
+        medicos[index] = medicos[medicos.length - 1];
+        medicos.pop();
+    }
+    
     function removeMedicamentoInOrder(uint CPF, uint index) internal {
         for (uint i=index; i< registroMedicamentos[CPF].length-1; i++) {
             registroMedicamentos[CPF][i] = registroMedicamentos[CPF][i+1];
@@ -302,6 +303,5 @@ contract RegistroPaciente is Mortal {
             }
         }
     }
-    
     
 }
