@@ -144,7 +144,7 @@ function verTodosMedicosATT(){
     let myString = "";
     console.log(result);
     for(let i=1; i <= result.length ; i++){
-      myString += " Médico " + i + "-> Médico: " + result[i][1]+", CRM: " + result[i][2] + ", Especialidade: "+ result[i][3] + " | ";   
+      myString += " Médico " + i + "-> Médico: " + result[i-1][1]+", CRM: " + result[i-1][2] + ", Especialidade: "+ result[i-1][3] + " | ";   
     }
     document.getElementById("todos-medicos").innerHTML = myString;
   });
