@@ -304,4 +304,5 @@ contract RegistroPaciente is Mortal {
         }
     }
     
+    
 }
