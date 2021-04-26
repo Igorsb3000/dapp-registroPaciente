@@ -192,11 +192,10 @@ function editarPaciente(){
 function editarMedicamento(){
   let CPFPaciente = document.getElementById("AdressCadastrarMedico").value;
   let CodigoMedicamento = document.getElementById("CodigoMedicamentoEditarMedicamento").value;
-  let Medico = document.getElementById("nomeMedicoEditarMedicamento").value;
   let Medicamento = document.getElementById("MedicamentoEditarMedicamento").value;
   let DataInicio = document.getElementById("DataInicioEditarMedicamento").value;
   let DataFim = document.getElementById("DataFimEditarMedicamento").value;
-  return DApp.contracts.registrosPaciente.methods.editarMedicamento(CPFPaciente, CodigoMedicamento, Medico, Medicamento, DataInicio, DataFim).send({ from: DApp.account });
+  return DApp.contracts.registrosPaciente.methods.editarMedicamento(CPFPaciente, CodigoMedicamento, Medicamento, DataInicio, DataFim).send({ from: DApp.account });
 }
 
 function cadastrarMedico(){
@@ -332,8 +331,6 @@ function atualizaInterface(){
       document.getElementById("formDeletarMedico").style.display = "block";
     }
   })
-
-
 
 }
 
