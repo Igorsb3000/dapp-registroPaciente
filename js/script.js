@@ -190,7 +190,7 @@ function editarPaciente(){
 }
 
 function editarMedicamento(){
-  let CPFPaciente = document.getElementById("AdressCadastrarMedico").value;
+  let CPFPaciente = document.getElementById("CPFEditarMedicamento").value;
   let CodigoMedicamento = document.getElementById("CodigoMedicamentoEditarMedicamento").value;
   let Medicamento = document.getElementById("MedicamentoEditarMedicamento").value;
   let DataInicio = document.getElementById("DataInicioEditarMedicamento").value;
@@ -212,12 +212,12 @@ function editarMedico(){
   let NomeEditarMedico = document.getElementById("NomeEditarMedico").value;
   let EspecialidadeEditarMedico = document.getElementById("EspecialidadeEditarMedico").value;
   let LotacaoEditarMedico = document.getElementById("LotacaoEditarMedico").value;
-  return DApp.contracts.registrosPaciente.methods.editarMedico(CRMCadastrarMedico, NomeCadastrarMedico, EspecialidadeCadastrarMedico, LotacaoCadastrarMedico).send({ from: DApp.account });
+  return DApp.contracts.registrosPaciente.methods.editarMedico(CRMEditarMedico, NomeEditarMedico, EspecialidadeEditarMedico, LotacaoEditarMedico).send({ from: DApp.account });
 }
 
 function deletarMedico(){
   let CRMEditarMedico = document.getElementById("CRMDeletarMedico").value;
-  return DApp.contracts.registrosPaciente.methods.deletarMedico(CRMCadastrarMedico).send({ from: DApp.account });
+  return DApp.contracts.registrosPaciente.methods.deletarMedico(CRMEditarMedico).send({ from: DApp.account });
 }
 
 
