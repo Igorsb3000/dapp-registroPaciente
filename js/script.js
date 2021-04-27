@@ -367,7 +367,7 @@ function registraEventoMedicamento(eventos) {
     let td2 = document.createElement("td");
     td2.innerHTML = evento["returnValues"]["nomeMedicamento"];
     let td3 = document.createElement("td");
-    td3.innerHTML = evento["returnValues"]["id"] + " (ID)";
+    td3.innerHTML = evento["returnValues"]["idMedicamento"] + " (ID)";
     let td4 = document.createElement("td");
     td4.innerHTML = evento["returnValues"]["tipoAcao"];
     let td5 = document.createElement("td");  
