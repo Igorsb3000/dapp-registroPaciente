@@ -36,7 +36,7 @@ var abi = [
 			{
 				"indexed": false,
 				"internalType": "uint256",
-				"name": "id",
+				"name": "idMedicamento",
 				"type": "uint256"
 			},
 			{
