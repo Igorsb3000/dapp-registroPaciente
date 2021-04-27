@@ -23,7 +23,7 @@ contract RegistroPaciente is Mortal {
     event pacienteDeletado(string nome, uint CPF, string tipoAcao);
     event pacienteAlterado(string nome, uint CPF, string tipoAcao);
     
-    event medicamentoCadastrado(uint id, string nomeMedicamento, string dataInicioTratamento, string dataFimTratamento, string tipoAcao);
+    event medicamentoCadastrado(uint idMedicamento, string nomeMedicamento, string dataInicioTratamento, string dataFimTratamento, string tipoAcao);
     event medicamentoDeletado(uint CPF, uint idMedicamento, string nomeMedicamento, string tipoAcao);
     event medicamentoAlterado(uint CPF, uint idMedicamento, string nomeMedicamento, string tipoAcao);
     
